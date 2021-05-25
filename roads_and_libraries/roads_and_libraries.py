@@ -23,6 +23,23 @@ PROBLEM_INPUT = [
     [5, 6, 1, [[1, 2], [1, 3], [1, 4]]],
 ]
 
+def format_line(line):
+    return [int(i) for i in line.split()]
+
+def process_input(file_name):
+    with open(file_name, 'r') as reader:
+        test_cases_count = int(reader.readline())
+        test_cases = []
+        for _ in range(test_cases_count):
+            test_info = [0,0,0,[]]
+            test_info[0], connections_count, test_info[1], test_info[2] = format_line(reader.readline())
+            for _ in range(connections_count):
+                test_info[3].append(format_line(reader.readline()))
+
+            test_cases.append(test_info)
+
+    return test_cases
+            
 
 def roadsAndLibraries(n, c_lib, c_road, cities):
     if c_lib < c_road:
@@ -30,14 +47,15 @@ def roadsAndLibraries(n, c_lib, c_road, cities):
 
     networks = []
 
-    city_graph = {i : [j for j in cities if i in j] for i in range(1, n + 1)}
-    for key in city_graph:
-        city_graph[key] = set([item for sublist in city_graph[key] for item in sublist])
+    # city_graph = {i : [j for j in cities if i in j] for i in range(1, n + 1)}
+    # for key in city_graph:
+    #     city_graph[key] = set([item for sublist in city_graph[key] for item in sublist])
 
-    cities = list(city_graph.keys())
+
+    # cities = list(city_graph.keys())
 
     def get_network():
-        network = city_graph[cities[0]]
+        network = cities[0]
         cities.pop(0)
         def find_neighbors():
             diff = network.intersection(set(cities))
@@ -49,18 +67,29 @@ def roadsAndLibraries(n, c_lib, c_road, cities):
                     cities.remove(city)
                 find_neighbors()
         find_neighbors()
+        print(network)
         networks.append(network)
-        if len(cities) > 0:
-            get_network()
 
-    get_network()
+    # while len(cities) > 0:
+    #     get_network()
+
+
+    for i in cities:
+
+
+
+    # get_network()
     cost_roads = c_road * (n - len(networks))
     cost_libraries = c_lib * len(networks)
 
     return cost_roads + cost_libraries
 
 if __name__ == '__main__':
-    q = PROBLEM_INPUT
+    # q = PROBLEM_INPUT
+    q = process_input('input08.txt')
+    
+    # print(q)
+
 
     for q_itr in q:
         n = int(q_itr[0])
