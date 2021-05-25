@@ -23,73 +23,69 @@ PROBLEM_INPUT = [
     [5, 6, 1, [[1, 2], [1, 3], [1, 4]]],
 ]
 
+
 def format_line(line):
     return [int(i) for i in line.split()]
+
 
 def process_input(file_name):
     with open(file_name, 'r') as reader:
         test_cases_count = int(reader.readline())
         test_cases = []
         for _ in range(test_cases_count):
-            test_info = [0,0,0,[]]
-            test_info[0], connections_count, test_info[1], test_info[2] = format_line(reader.readline())
+            test_info = [0, 0, 0, []]
+            test_info[0], connections_count, test_info[1], test_info[
+                2] = format_line(reader.readline())
             for _ in range(connections_count):
                 test_info[3].append(format_line(reader.readline()))
 
             test_cases.append(test_info)
 
     return test_cases
-            
+
 
 def roadsAndLibraries(n, c_lib, c_road, cities):
+
     if c_lib < c_road:
         return c_lib * n
 
-    networks = []
+    checked = set()
+    not_checked = set()
+    count_networks = 0
 
-    # city_graph = {i : [j for j in cities if i in j] for i in range(1, n + 1)}
-    # for key in city_graph:
-    #     city_graph[key] = set([item for sublist in city_graph[key] for item in sublist])
+    while len(cities) > 0:
+        not_checked.update(cities.pop())
+        while len(not_checked) > 0:
+            found_cities = set()
 
+            for city in cities:
+                if not not_checked.isdisjoint(set(city)):
+                    found_cities.update(city)
+            checked.update(not_checked)
+            not_checked.clear()
+            cities = [
+                city for city in cities if found_cities.isdisjoint(set(city))
+            ]
 
-    # cities = list(city_graph.keys())
+            for city in found_cities:
+                if city not in checked:
+                    not_checked.add(city)
 
-    def get_network():
-        network = cities[0]
-        cities.pop(0)
-        def find_neighbors():
-            diff = network.intersection(set(cities))
-            if not diff:
-                return
-            else:
-                for city in diff:
-                    network.update(city_graph[city])
-                    cities.remove(city)
-                find_neighbors()
-        find_neighbors()
-        print(network)
-        networks.append(network)
+        count_networks += 1
 
-    # while len(cities) > 0:
-    #     get_network()
-
-
-    for i in cities:
-
-
-
-    # get_network()
-    cost_roads = c_road * (n - len(networks))
-    cost_libraries = c_lib * len(networks)
+    count_network_cities = len(checked)
+    count_non_network_cities = n - count_network_cities
+    cost_roads = c_road * (count_network_cities - count_networks)
+    cost_libraries = c_lib * (count_non_network_cities + count_networks)
 
     return cost_roads + cost_libraries
 
+
 if __name__ == '__main__':
     # q = PROBLEM_INPUT
-    q = process_input('input08.txt')
-    
-    # print(q)
+    q = process_input('input02.txt')
 
+    # print(q)
 
     for q_itr in q:
         n = int(q_itr[0])
